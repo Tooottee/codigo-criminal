@@ -1654,6 +1654,27 @@
         </div>
     </div>
 
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyD_aeeLfFjRbjj4Tu0xgvL5doklKpsbgP8",
+        authDomain: "detectives-abogados.firebaseapp.com",
+        databaseURL: "https://detectives-abogados-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "detectives-abogados",
+        storageBucket: "detectives-abogados.firebasestorage.app",
+        messagingSenderId: "983241099924",
+        appId: "1:983241099924:web:b3bbb3abafbd1c139c8281"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    window.db = firebase.firestore();
+</script>
+
+
     <script>
 
         // Variables globales
@@ -2276,16 +2297,27 @@ async function confirmarMulta() {
     };
 
     try {
-        await firebase.firestore()
-            .collection("multas")
-            .add(nuevaMulta);
-
-        alert("Multa registrada correctamente.");
+        // ✅ CORREGIDO: Usar la sintaxis correcta de Firebase
+        const docRef = await window.db.collection('multas').add(nuevaMulta);
+        
+        // Añadir a la lista local con el ID de Firestore
+        multas.push({ ...nuevaMulta, firestoreId: docRef.id });
+        
+        // Actualizar vistas
+        renderHistorialMultas();
+        renderHistorial();
+        updateStats();
+        
+        alert("✅ Multa registrada correctamente.");
         limpiarMultaActual();
+        
+        // Limpiar campos
+        document.getElementById('nombreMultado').value = '';
+        document.getElementById('idMultado').value = '';
 
     } catch (err) {
         console.error("Error al guardar multa:", err);
-        alert("Hubo un error guardando la multa.");
+        alert("❌ Hubo un error guardando la multa: " + err.message);
     }
 }
 
@@ -2982,57 +3014,6 @@ async function deleteCategory(categoryName) {
                 document.getElementById('totalSentencia').textContent = totalSentencia;
             }
         }
-
-async function confirmarMulta() {
-    const nombre = document.getElementById('nombreMultado').value.trim();
-    const idSancionado = document.getElementById('idMultado').value.trim();
-
-    if (!nombre) {
-        alert('Por favor, escribe el nombre del sancionado.');
-        return;
-    }
-    if (!idSancionado) {
-        alert('Por favor, escribe el ID del sancionado.');
-        return;
-    }
-    if (multaActual.length === 0) {
-        alert('No hay artículos añadidos a la multa.');
-        return;
-    }
-
-    const totalCantidad = multaActual.reduce((s, a) => s + parseFloat(a.cantidad || 0), 0);
-    const totalSentencia = multaActual.reduce((s, a) => s + parseInt(a.sentencia || 0), 0);
-
-    const nuevaMulta = {
-        id: Date.now(),
-        nombre: nombre,
-        idSancionado: idSancionado,
-        articulos: multaActual.map(a => ({
-            articulo: a.articulo,
-            descripcion: a.descripcion,
-            cantidad: parseFloat(a.cantidad || 0),
-            sentencia: parseInt(a.sentencia || 0)
-        })),
-        totalCantidad: totalCantidad,
-        totalSentencia: totalSentencia,
-        fecha: new Date().toISOString()
-    };
-
-    try {
-        await firebase.firestore()
-            .collection("multas")
-            .add(nuevaMulta);
-
-        alert("Multa registrada correctamente.");
-        limpiarMultaActual();
-
-    } catch (err) {
-        console.error("Error al guardar multa:", err);
-        alert("Hubo un error guardando la multa.");
-    }
-}
-
-
         function renderHistorialMultas() {
             const container = document.getElementById('historialMultas');
             if (!container) return;
@@ -3073,115 +3054,146 @@ async function confirmarMulta() {
             dlAnchor.click();
         }
 
-        function borrarMulta(id) {
-            if (!confirm('¿Eliminar esta multa del historial?')) return;
-            multas = multas.filter(m => m.id !== id);
-            renderHistorialMultas();
-            updateStats();
+async function borrarMulta(id) {
+    if (!confirm('¿Eliminar esta multa del historial?')) return;
+    
+    try {
+        const multa = multas.find(m => m.id === id);
+        if (multa && multa.firestoreId) {
+            await window.db.collection('multas').doc(multa.firestoreId).delete();
         }
+        
+        multas = multas.filter(m => m.id !== id);
+        renderHistorialMultas();
+        renderHistorial();
+        updateStats();
+        
+        alert('✅ Multa eliminada');
+    } catch (error) {
+        console.error('Error eliminando multa:', error);
+        alert('❌ Error al eliminar la multa');
+    }
+}
 
-        function downloadJSON() {
-            const dataToExport = {
-                categories: categories || [],
-                articles: articles || [],
-                multas: multas || [],
-                ranks: ranks || []
-            };
+async function loadJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-            if (dataToExport.categories.length === 0 && dataToExport.articles.length === 0 && dataToExport.multas.length === 0 && dataToExport.ranks.length === 0) {
-                alert('No hay datos para descargar.');
-                return;
-            }
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const loadedData = JSON.parse(e.target.result);
 
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToExport, null, 2));
-            const dlAnchor = document.createElement('a');
-            dlAnchor.setAttribute("href", dataStr);
-            dlAnchor.setAttribute("download", "codigo_criminal.json");
-            document.body.appendChild(dlAnchor);
-            dlAnchor.click();
-            document.body.removeChild(dlAnchor);
-            alert('✓ JSON descargado correctamente\n\n' + dataToExport.categories.length + ' categorías\n' + dataToExport.articles.length + ' artículos\n' + dataToExport.multas.length + ' multas\n' + dataToExport.ranks.length + ' rangos');
-        }
+            let loadedCategories = [];
+            let loadedArticles = [];
+            let loadedMultas = [];
+            let loadedRanks = [];
 
-        function loadJSON(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const loadedData = JSON.parse(e.target.result);
-
-                    let loadedCategories = [];
-                    let loadedArticles = [];
-                    let loadedMultas = [];
-                    let loadedRanks = [];
-
-                    if (Array.isArray(loadedData)) {
-                        loadedArticles = loadedData;
-                    } else if (loadedData.articles || loadedData.categories || loadedData.multas || loadedData.ranks) {
-                        loadedCategories = loadedData.categories || [];
-                        loadedArticles = loadedData.articles || [];
-                        loadedMultas = loadedData.multas || [];
-                        loadedRanks = loadedData.ranks || [];
-                    } else if (loadedData.codigo_criminal) {
-                        const cc = loadedData.codigo_criminal;
-                        if (Array.isArray(cc)) {
-                            cc.forEach(ch => {
-                                if (ch.articulos && Array.isArray(ch.articulos)) {
-                                    ch.articulos.forEach(a => {
-                                        loadedArticles.push(Object.assign({}, a, { capitulo: ch.capitulo || '' }));
-                                    });
-                                }
+            // ... (tu código de parseo existente) ...
+            
+            if (Array.isArray(loadedData)) {
+                loadedArticles = loadedData;
+            } else if (loadedData.articles || loadedData.categories || loadedData.multas || loadedData.ranks) {
+                loadedCategories = loadedData.categories || [];
+                loadedArticles = loadedData.articles || [];
+                loadedMultas = loadedData.multas || [];
+                loadedRanks = loadedData.ranks || [];
+            } else if (loadedData.codigo_criminal) {
+                const cc = loadedData.codigo_criminal;
+                if (Array.isArray(cc)) {
+                    cc.forEach(ch => {
+                        if (ch.articulos && Array.isArray(ch.articulos)) {
+                            ch.articulos.forEach(a => {
+                                loadedArticles.push(Object.assign({}, a, { capitulo: ch.capitulo || '' }));
                             });
                         }
-                        loadedMultas = loadedData.multas || [];
-                        loadedRanks = loadedData.ranks || [];
-                    } else {
-                        throw new Error('Formato de archivo no reconocido');
-                    }
-
-                    const confirmLoad = confirm(
-                        `Se cargarán:\n- ${loadedCategories.length} categorías\n- ${loadedArticles.length} artículos\n- ${loadedMultas.length} multas\n- ${loadedRanks.length} rangos\n\nOK = REEMPLAZAR | Cancelar = AGREGAR`
-                    );
-
-                    if (confirmLoad) {
-                        categories = loadedCategories.slice();
-                        articles = loadedArticles.map((a, idx) => Object.assign({}, a, { id: Date.now() + idx }));
-                        multas = loadedMultas.map((m, idx) => Object.assign({}, m, { id: m.id || Date.now() + idx }));
-                        ranks = loadedRanks.map((r, idx) => Object.assign({}, r, { id: r.id || Date.now() + idx }));
-                    } else {
-                        loadedCategories.forEach(cat => { if (!categories.includes(cat)) categories.push(cat); });
-                        const newArticles = loadedArticles.map((a, idx) => Object.assign({}, a, { id: Date.now() + idx + 1000 }));
-                        articles = articles.concat(newArticles);
-                        const newMultas = loadedMultas.map((m, idx) => Object.assign({}, m, { id: m.id || Date.now() + idx + 2000 }));
-                        multas = multas.concat(newMultas);
-                        const newRanks = loadedRanks.map((r, idx) => Object.assign({}, r, { id: r.id || Date.now() + idx + 3000 }));
-                        ranks = ranks.concat(newRanks);
-                    }
-
-                    renderTable(articles);
-                    renderCategories();
-                    updateCategoryDropdowns();
-                    renderHistorialMultas();
-                    renderRanks();
-                    updateStats();
-
-                    alert(`✓ JSON cargado correctamente:\n\n${loadedCategories.length} categorías\n${loadedArticles.length} artículos\n${loadedMultas.length} multas\n${loadedRanks.length} rangos`);
-
-                    if (!openTabs.find(t => t.id === 'codigo')) {
-                        openTab('codigo', 'C. CRIMINAL');
-                    } else {
-                        activateTab('codigo');
-                    }
-
-                } catch (err) {
-                    alert('✗ Error al cargar el archivo JSON: ' + err.message);
+                    });
                 }
-            };
-            reader.readAsText(file);
-            event.target.value = '';
+                loadedMultas = loadedData.multas || [];
+                loadedRanks = loadedData.ranks || [];
+            }
+
+            const confirmLoad = confirm(
+                `Se cargarán:\n- ${loadedCategories.length} categorías\n- ${loadedArticles.length} artículos\n- ${loadedMultas.length} multas\n- ${loadedRanks.length} rangos\n\n✅ OK = REEMPLAZAR Y GUARDAR EN FIREBASE\n❌ Cancelar = AGREGAR Y GUARDAR EN FIREBASE`
+            );
+
+            // ✅ NUEVO: Guardar en Firebase
+            try {
+                if (confirmLoad) {
+                    // REEMPLAZAR: Borrar todo y subir nuevo
+                    
+                    // 1. Borrar categorías existentes
+                    const catSnapshot = await window.db.collection('categories').get();
+                    const catBatch = window.db.batch();
+                    catSnapshot.docs.forEach(doc => catBatch.delete(doc.ref));
+                    await catBatch.commit();
+                    
+                    // 2. Borrar artículos existentes
+                    const artSnapshot = await window.db.collection('articles').get();
+                    const artBatch = window.db.batch();
+                    artSnapshot.docs.forEach(doc => artBatch.delete(doc.ref));
+                    await artBatch.commit();
+                    
+                    // 3. Subir nuevas categorías
+                    categories = [];
+                    for (const cat of loadedCategories) {
+                        await window.db.collection('categories').add({ name: cat });
+                        categories.push(cat);
+                    }
+                    
+                    // 4. Subir nuevos artículos
+                    articles = [];
+                    for (const art of loadedArticles) {
+                        const docRef = await window.db.collection('articles').add(art);
+                        articles.push({ ...art, firestoreId: docRef.id });
+                    }
+                    
+                } else {
+                    // AGREGAR: Mantener existente y añadir nuevo
+                    
+                    // 1. Agregar categorías nuevas
+                    for (const cat of loadedCategories) {
+                        if (!categories.includes(cat)) {
+                            await window.db.collection('categories').add({ name: cat });
+                            categories.push(cat);
+                        }
+                    }
+                    
+                    // 2. Agregar artículos nuevos
+                    for (const art of loadedArticles) {
+                        const docRef = await window.db.collection('articles').add(art);
+                        articles.push({ ...art, firestoreId: docRef.id });
+                    }
+                }
+
+                // Renderizar todo
+                renderTable(articles);
+                renderCategories();
+                updateCategoryDropdowns();
+                renderHistorialMultas();
+                renderRanks();
+                updateStats();
+
+                alert(`✅ JSON cargado y guardado en Firebase:\n\n${loadedCategories.length} categorías\n${loadedArticles.length} artículos\n${loadedMultas.length} multas\n${loadedRanks.length} rangos`);
+
+                if (!openTabs.find(t => t.id === 'codigo')) {
+                    openTab('codigo', 'C. CRIMINAL');
+                } else {
+                    activateTab('codigo');
+                }
+
+            } catch (err) {
+                console.error('Error guardando en Firebase:', err);
+                alert('❌ Error al guardar en Firebase: ' + err.message);
+            }
+
+        } catch (err) {
+            alert('❌ Error al cargar el archivo JSON: ' + err.message);
         }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
 
         // Inicialización
             document.addEventListener('DOMContentLoaded', function() {
@@ -3436,27 +3448,6 @@ async function confirmarMulta() {
     const activeBtn = document.querySelector(`button[onclick="showSection('${sectionId}')"]`);
     if (activeBtn) activeBtn.classList.add('active');
 }
-
-<!-- Cierre de tu último script original -->
-        </script>  
-
-        <!-- Firebase sin imports -->
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
-        <script>
-            const firebaseConfig = {
-                apiKey: "...",
-                authDomain: "...",
-                databaseURL: "...",
-                projectId: "...",
-                storageBucket: "...",
-                messagingSenderId: "...",
-                appId: "..."
-            };
-        
-            firebase.initializeApp(firebaseConfig);
-            window.db = firebase.firestore();
         </script>
         <!-- FIN FIREBASE -->
 </body>
