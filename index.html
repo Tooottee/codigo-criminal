@@ -2241,7 +2241,6 @@ async function saveEditedArticle() {
 }
 
 async function confirmarMulta() {
-
     const nombre = document.getElementById('nombreMultado').value.trim();
     const idSancionado = document.getElementById('idMultado').value.trim();
 
@@ -2289,6 +2288,7 @@ async function confirmarMulta() {
         alert("Hubo un error guardando la multa.");
     }
 }
+
 
 
 async function deleteCategory(categoryName) {
@@ -2983,59 +2983,55 @@ async function deleteCategory(categoryName) {
             }
         }
 
-        async function confirmarMulta() {
-            const { collection, addDoc } = window.firestoreModules;
-            
-            const nombre = document.getElementById('nombreMultado').value.trim();
-            const idSancionado = document.getElementById('idMultado').value.trim();
-            
-            if (!nombre) {
-                alert('Por favor, escribe el nombre del sancionado.');
-                return;
-            }
-            if (!idSancionado) {
-                alert('Por favor, escribe el ID del sancionado.');
-                return;
-            }
-            if (multaActual.length === 0) {
-                alert('No hay artículos añadidos a la multa.');
-                return;
-            }
-            
-            const totalCantidad = multaActual.reduce((s, a) => s + parseFloat(a.cantidad || 0), 0);
-            const totalSentencia = multaActual.reduce((s, a) => s + parseInt(a.sentencia || 0), 0);
-            
-            const nuevaMulta = {
-                id: Date.now(),
-                nombre: nombre,
-                idSancionado: idSancionado,
-                articulos: multaActual.map(a => ({
-                    articulo: a.articulo,
-                    descripcion: a.descripcion,
-                    cantidad: parseFloat(a.cantidad || 0),
-                    sentencia: parseInt(a.sentencia || 0)
-                })),
-                totalCantidad: totalCantidad,
-                totalSentencia: totalSentencia,
-                fecha: new Date().toISOString()
-            };
-        
-            try {
-                const docRef = await addDoc(collection(window.db, 'multas'), nuevaMulta);
-                multas.push({ ...nuevaMulta, firestoreId: docRef.id });
-                
-                multaActual = [];
-                document.getElementById('nombreMultado').value = '';
-                document.getElementById('idMultado').value = '';
-                renderMultaActual();
-                renderHistorialMultas();
-                updateStats();
-                alert('✅ Multa guardada en el historial.');
-            } catch (error) {
-                console.error('Error guardando multa:', error);
-                alert('❌ Error al guardar la multa');
-            }
-        }
+async function confirmarMulta() {
+    const nombre = document.getElementById('nombreMultado').value.trim();
+    const idSancionado = document.getElementById('idMultado').value.trim();
+
+    if (!nombre) {
+        alert('Por favor, escribe el nombre del sancionado.');
+        return;
+    }
+    if (!idSancionado) {
+        alert('Por favor, escribe el ID del sancionado.');
+        return;
+    }
+    if (multaActual.length === 0) {
+        alert('No hay artículos añadidos a la multa.');
+        return;
+    }
+
+    const totalCantidad = multaActual.reduce((s, a) => s + parseFloat(a.cantidad || 0), 0);
+    const totalSentencia = multaActual.reduce((s, a) => s + parseInt(a.sentencia || 0), 0);
+
+    const nuevaMulta = {
+        id: Date.now(),
+        nombre: nombre,
+        idSancionado: idSancionado,
+        articulos: multaActual.map(a => ({
+            articulo: a.articulo,
+            descripcion: a.descripcion,
+            cantidad: parseFloat(a.cantidad || 0),
+            sentencia: parseInt(a.sentencia || 0)
+        })),
+        totalCantidad: totalCantidad,
+        totalSentencia: totalSentencia,
+        fecha: new Date().toISOString()
+    };
+
+    try {
+        await firebase.firestore()
+            .collection("multas")
+            .add(nuevaMulta);
+
+        alert("Multa registrada correctamente.");
+        limpiarMultaActual();
+
+    } catch (err) {
+        console.error("Error al guardar multa:", err);
+        alert("Hubo un error guardando la multa.");
+    }
+}
+
 
         function renderHistorialMultas() {
             const container = document.getElementById('historialMultas');
