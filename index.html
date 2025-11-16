@@ -2240,34 +2240,56 @@ async function saveEditedArticle() {
     }
 }
 
-async function addCategory() {
-    const { collection, addDoc } = window.firestoreModules;
-    
-    const input = document.getElementById('newCategoryInput');
-    const categoryName = input.value.trim();
-    
-    if (!categoryName) {
-        alert('Por favor, escribe un nombre para la categoría');
+async function confirmarMulta() {
+
+    const nombre = document.getElementById('nombreMultado').value.trim();
+    const idSancionado = document.getElementById('idMultado').value.trim();
+
+    if (!nombre) {
+        alert('Por favor, escribe el nombre del sancionado.');
         return;
     }
-    
-    if (categories.includes(categoryName)) {
-        alert('Esta categoría ya existe');
+    if (!idSancionado) {
+        alert('Por favor, escribe el ID del sancionado.');
         return;
     }
-    
+    if (multaActual.length === 0) {
+        alert('No hay artículos añadidos a la multa.');
+        return;
+    }
+
+    const totalCantidad = multaActual.reduce((s, a) => s + parseFloat(a.cantidad || 0), 0);
+    const totalSentencia = multaActual.reduce((s, a) => s + parseInt(a.sentencia || 0), 0);
+
+    const nuevaMulta = {
+        id: Date.now(),
+        nombre: nombre,
+        idSancionado: idSancionado,
+        articulos: multaActual.map(a => ({
+            articulo: a.articulo,
+            descripcion: a.descripcion,
+            cantidad: parseFloat(a.cantidad || 0),
+            sentencia: parseInt(a.sentencia || 0)
+        })),
+        totalCantidad: totalCantidad,
+        totalSentencia: totalSentencia,
+        fecha: new Date().toISOString()
+    };
+
     try {
-        await addDoc(collection(window.db, 'categories'), { name: categoryName });
-        categories.push(categoryName);
-        input.value = '';
-        renderCategories();
-        updateCategoryDropdowns();
-        alert('✅ Categoría añadida');
-    } catch (error) {
-        console.error('Error añadiendo categoría:', error);
-        alert('❌ Error al añadir la categoría');
+        await firebase.firestore()
+            .collection("multas")
+            .add(nuevaMulta);
+
+        alert("Multa registrada correctamente.");
+        limpiarMultaActual();
+
+    } catch (err) {
+        console.error("Error al guardar multa:", err);
+        alert("Hubo un error guardando la multa.");
     }
 }
+
 
 async function deleteCategory(categoryName) {
     if (!confirm(`¿Estás seguro de eliminar la categoría "${categoryName}"?\n\nLos artículos de esta categoría NO se eliminarán.`)) return;
