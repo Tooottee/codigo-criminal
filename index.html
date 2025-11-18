@@ -2143,14 +2143,15 @@
         return match ? parseInt(match[1]) : 999999;
     }
 
-    function extractArticleNumber(articulo) {
-        if (!articulo) return [999999, 999999];
-        const str = articulo.toString();
-        const parts = str.split('.');
-        const major = parseInt(parts[0]) || 999999;
-        const minor = parts[1] ? parseInt(parts[1]) : 0;
-        return [major, minor];
-    }
+function extractArticleNumber(articulo) {
+    if (!articulo) return [999999];
+    
+    // Extraer todos los números del artículo: "1.27.1" → [1, 27, 1]
+    const nums = articulo.match(/\d+/g);
+    if (!nums) return [999999];
+    
+    return nums.map(n => parseInt(n));
+}
 
         function closeModal() {
         document.getElementById('modalOverlay').classList.remove('active');
@@ -2403,14 +2404,18 @@
                         return catNumA - catNumB;
                     }
 
-                    const [majorA, minorA] = extractArticleNumber(a.articulo);
-                    const [majorB, minorB] = extractArticleNumber(b.articulo);
+                // Obtener arrays de números: [1, 27] vs [1, 27, 1]
+                const numsA = extractArticleNumber(a.articulo);
+                const numsB = extractArticleNumber(b.articulo);
 
-                    if (majorA !== majorB) {
-                        return majorA - majorB;
-                    }
+                // Comparar nivel por nivel
+                for (let i = 0; i < Math.max(numsA.length, numsB.length); i++) {
+                    const numA = numsA[i] || 0;
+                    const numB = numsB[i] || 0;
+                    if (numA !== numB) return numA - numB;
+                }
 
-                    return minorA - minorB;
+                return 0;
                 });
 
                 renderTable(articles);
@@ -2552,14 +2557,18 @@ function renderTable(data, searchTerm = '') {
             return catNumA - catNumB;
         }
         
-        const [majorA, minorA] = extractArticleNumber(a.articulo);
-        const [majorB, minorB] = extractArticleNumber(b.articulo);
-        
-        if (majorA !== majorB) {
-            return majorA - majorB;
+        // Obtener arrays de números: [1, 27] vs [1, 27, 1]
+        const numsA = extractArticleNumber(a.articulo);
+        const numsB = extractArticleNumber(b.articulo);
+            
+        // Comparar nivel por nivel
+        for (let i = 0; i < Math.max(numsA.length, numsB.length); i++) {
+            const numA = numsA[i] || 0;
+            const numB = numsB[i] || 0;
+            if (numA !== numB) return numA - numB;
         }
         
-        return minorA - minorB;
+        return 0;
     });
 
     let html = '';
