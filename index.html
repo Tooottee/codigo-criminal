@@ -1212,12 +1212,12 @@
         </header>
 
         <div class="nav-buttons">
-            <button class="nav-btn active detective-only" onclick="showSection('informes')">📋 Informes</button>
+            <button class="nav-btn active detective-only admin-only" onclick="showSection('informes')">📋 Informes</button>
             <button class="nav-btn detective-only abogado-only" onclick="showSection('historial')">📚 Historial de Casos</button>
             <button class="nav-btn detective-only abogado-only" onclick="showSection('tablet')">💻 Tablet Policial</button>
         </div>
 
-        <div class="section active" id="informes">
+        <div class="section" id="informes">
             <div class="card">
                 <h2>📋 Informes de Detectives</h2>
                 
@@ -1506,73 +1506,181 @@
         </div>
     </div>
 
-    <!-- MODAL AÑADIR/EDITAR INFORME -->
-    <div class="edit-modal" id="reportModal">
-        <div class="edit-modal-content">
-            <h2 style="color: #2196f3; text-align: center; margin-bottom: 20px;" id="modalTitle">📝 Nuevo Informe de Detective</h2>
-            
-            <div class="form-group">
-                <label>Número de Caso *</label>
-                <input type="text" id="caseNumber" placeholder="Ej: CASO #2024-1001">
-            </div>
+<!-- MODAL AÑADIR/EDITAR INFORME -->
+<div class="edit-modal" id="reportModal">
+    <div class="edit-modal-content">
+        <h2 style="color: #2196f3; text-align: center; margin-bottom: 20px;" id="modalTitle">📝 Nuevo Informe de Detective</h2>
+        
+        <div class="form-group">
+            <label>Número de Caso *</label>
+            <input type="text" id="caseNumber" placeholder="Ej: CASO #2024-1001">
+        </div>
 
-            <div class="form-group">
-                <label>Estado *</label>
-                <select id="caseStatus">
-                    <option value="abierto">Abierto</option>
-                    <option value="cerrado">Cerrado</option>
-                    <option value="investigando">En Investigación</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label>Estado del Caso *</label>
+            <select id="caseStatus">
+                <option value="abierto">Abierto</option>
+                <option value="cerrado">Cerrado</option>
+                <option value="investigando">En Investigación</option>
+            </select>
+        </div>
 
-            <div class="form-group">
-                <label>Título *</label>
-                <input type="text" id="caseTitle" placeholder="Título del caso">
-            </div>
+        <div class="form-group">
+            <label>Título *</label>
+            <input type="text" id="caseTitle" placeholder="Título del caso">
+        </div>
 
-            <div class="form-group">
-                <label>Detective Asignado *</label>
-                <input type="text" id="caseDetective" placeholder="Ej: Det. Ramírez">
-            </div>
+        <div class="form-group">
+            <label>Detective Asignado *</label>
+            <input type="text" id="caseDetective" placeholder="Ej: Det. Ramírez">
+        </div>
 
-            <div class="form-group">
-                <label>Fecha *</label>
-                <input type="text" id="caseDate" placeholder="Ej: 15/09/2024">
-            </div>
+        <div class="form-group">
+            <label>Fecha *</label>
+            <input type="text" id="caseDate" placeholder="Ej: 15/09/2024">
+        </div>
 
-            <div class="form-group">
-                <label>Resumen *</label>
-                <textarea id="caseSummary" placeholder="Descripción detallada del caso"></textarea>
-            </div>
+        <div class="form-group">
+            <label>Resumen *</label>
+            <textarea id="caseSummary" placeholder="Descripción detallada del caso"></textarea>
+        </div>
 
-            <h3 style="color: #64b5f6; margin: 20px 0;">🧾 Información del Sospechoso</h3>
+        <h3 style="color: #64b5f6; margin: 20px 0;">🧾 Información del Sospechoso</h3>
 
-            <div class="form-group">
-                <label>Nombre Completo</label>
-                <input type="text" id="suspectName" placeholder="Nombre y apellido">
-            </div>
+        <div class="form-group">
+            <label>Nombre Completo</label>
+            <input type="text" id="suspectName" placeholder="Nombre y apellido">
+        </div>
 
-            <div class="form-group">
-                <label>DNI</label>
-                <input type="text" id="suspectDNI" placeholder="Documento">
-            </div>
+        <div class="form-group">
+            <label>DNI</label>
+            <input type="text" id="suspectDNI" placeholder="Documento">
+        </div>
 
-            <div class="form-group">
-                <label>Descripción Física</label>
-                <textarea id="suspectDescription" placeholder="Detalles físicos del sospechoso"></textarea>
-            </div>
+        <div class="form-group">
+            <label>Género</label>
+            <select id="suspectGender">
+                <option value="">Seleccionar...</option>
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+            </select>
+        </div>
 
-            <h3 style="color: #64b5f6; margin: 20px 0;">💰 Multas Asociadas</h3>
-            <p style="color: #90caf9; font-size: 0.9em; margin-bottom: 10px;">Las multas creadas desde la Tablet aparecerán automáticamente vinculadas si tienen el mismo nombre/ID</p>
-            
-            <div id="associatedFinesDisplay"></div>
+        <div class="form-group">
+            <label>Estado</label>
+            <select id="suspectState">
+                <option value="">Seleccionar...</option>
+                <option value="vivo">Vivo</option>
+                <option value="muerto">Muerto</option>
+                <option value="desaparecido">Desaparecido</option>
+                <option value="arrestado">Arrestado</option>
+                <option value="buscado">Buscado</option>
+            </select>
+        </div>
 
-            <div style="display: flex; gap: 15px; margin-top: 30px;">
-                <button class="btn" onclick="closeReportModal()" style="background: #5a5a5a;">❌ Cancelar</button>
-                <button class="btn" onclick="saveReport()">💾 Guardar</button>
+        <div class="form-group">
+            <label>Contextura</label>
+            <input type="text" id="suspectBuild" placeholder="Ej: Delgado, Atlético, Robusto">
+        </div>
+
+        <div class="form-group">
+            <label>Fecha de Nacimiento</label>
+            <input type="text" id="suspectBirthdate" placeholder="Ej: 15/03/1985">
+        </div>
+
+        <div class="form-group">
+            <label>Nacionalidad</label>
+            <input type="text" id="suspectNationality" placeholder="Ej: Español">
+        </div>
+
+        <div class="form-group">
+            <label>Estado Civil</label>
+            <select id="suspectMaritalStatus">
+                <option value="">Seleccionar...</option>
+                <option value="soltero">Soltero/a</option>
+                <option value="casado">Casado/a</option>
+                <option value="divorciado">Divorciado/a</option>
+                <option value="viudo">Viudo/a</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Teléfono de Contacto</label>
+            <input type="text" id="suspectPhone" placeholder="Ej: 555-1234">
+        </div>
+
+        <div class="form-group">
+            <label>Residencias</label>
+            <textarea id="suspectResidences" placeholder="Lista de direcciones conocidas"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Negocios</label>
+            <textarea id="suspectBusinesses" placeholder="Negocios o empresas asociadas"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Descripción Física</label>
+            <textarea id="suspectDescription" placeholder="Detalles físicos del sospechoso"></textarea>
+        </div>
+
+        <h3 style="color: #64b5f6; margin: 20px 0;">🚗 Vehículos Asociados</h3>
+        
+        <div id="vehiclesContainer">
+            <div class="vehicle-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>🚗 Vehículo:</label>
+                    <input type="text" class="vehicle-name" placeholder="Nombre del vehículo">
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" class="vehicle-model" placeholder="Modelo">
+                </div>
+                <div class="form-group">
+                    <label>Matrícula</label>
+                    <input type="text" class="vehicle-plate" placeholder="Matrícula">
+                </div>
+                <button type="button" class="btn btn-small btn-danger" onclick="removeVehicle(this)" style="margin-top: 10px;">🗑️ Eliminar Vehículo</button>
             </div>
         </div>
+        
+        <button type="button" class="btn" onclick="addVehicle()" style="background: #4caf50; margin-top: 10px;">➕ Añadir vehículo</button>
+
+        <h3 style="color: #64b5f6; margin: 20px 0;">📸 Evidencias Fotográficas</h3>
+        
+        <div id="evidencesContainer">
+            <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>📸 Evidencia Fotográfica:</label>
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label for="evidence-file-${Date.now()}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
+                        📁 Seleccionar Imagen
+                    </label>
+                    <input type="file" id="evidence-file-${Date.now()}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
+                    <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
+                </div>
+            </div>
+                <div class="form-group">
+                    <label>Descripción de la evidencia</label>
+                    <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
+                </div>
+                <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+            </div>
+        </div>
+        
+        <button type="button" class="btn" onclick="addEvidence()" style="background: #4caf50; margin-top: 10px;">➕ Añadir evidencia</button>
+
+        <h3 style="color: #64b5f6; margin: 20px 0;">💰 Multas Asociadas</h3>
+        <p style="color: #90caf9; font-size: 0.9em; margin-bottom: 10px;">Las multas creadas desde la Tablet aparecerán automáticamente vinculadas si tienen el mismo nombre/ID</p>
+        
+        <div id="associatedFinesDisplay"></div>
+
+        <div style="display: flex; gap: 15px; margin-top: 30px;">
+            <button class="btn" onclick="closeReportModal()" style="background: #5a5a5a;">❌ Cancelar</button>
+            <button class="btn" onclick="saveReport()">💾 Guardar</button>
+        </div>
     </div>
+</div>
 
     <!-- MODAL SELECCIÓN DE PESTAÑA TABLET -->
     <div class="modal-overlay" id="modalOverlay">
@@ -1729,7 +1837,6 @@
         renderTable(articles);
         renderCategories();
         updateCategoryDropdowns();
-        renderHistorialMultas();
         renderRanks();
     
         console.log('✅ Datos cargados desde Firestore');
@@ -1814,6 +1921,7 @@
     }
 
     // ==================== FUNCIONES DE INFORMES ====================
+// ==================== FUNCIONES DE INFORMES ====================
     function openReportModal() {
         editingIndex = null;
         document.getElementById('modalTitle').textContent = '📝 Nuevo Informe de Detective';
@@ -1825,7 +1933,52 @@
         document.getElementById('caseSummary').value = '';
         document.getElementById('suspectName').value = '';
         document.getElementById('suspectDNI').value = '';
+        document.getElementById('suspectGender').value = '';
+        document.getElementById('suspectState').value = '';
+        document.getElementById('suspectBuild').value = '';
+        document.getElementById('suspectBirthdate').value = '';
+        document.getElementById('suspectNationality').value = '';
+        document.getElementById('suspectMaritalStatus').value = '';
+        document.getElementById('suspectPhone').value = '';
+        document.getElementById('suspectResidences').value = '';
+        document.getElementById('suspectBusinesses').value = '';
         document.getElementById('suspectDescription').value = '';
+        
+        // Limpiar vehículos - dejar solo uno vacío
+        document.getElementById('vehiclesContainer').innerHTML = `
+            <div class="vehicle-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>🚗 Vehículo:</label>
+                    <input type="text" class="vehicle-name" placeholder="Nombre del vehículo">
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" class="vehicle-model" placeholder="Modelo">
+                </div>
+                <div class="form-group">
+                    <label>Matrícula</label>
+                    <input type="text" class="vehicle-plate" placeholder="Matrícula">
+                </div>
+                <button type="button" class="btn btn-small btn-danger" onclick="removeVehicle(this)" style="margin-top: 10px;">🗑️ Eliminar Vehículo</button>
+            </div>
+        `;
+        
+        // Limpiar evidencias - dejar solo una vacía
+        document.getElementById('evidencesContainer').innerHTML = `
+            <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>📸 Evidencia Fotográfica:</label>
+                    <input type="file" class="evidence-file" accept="image/*" onchange="updateFilename(this)">
+                    <span class="evidence-filename" style="color: #90caf9; margin-left: 10px;">Ningún archivo seleccionado</span>
+                </div>
+                <div class="form-group">
+                    <label>Descripción de la evidencia</label>
+                    <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
+                </div>
+                <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+            </div>
+        `;
+        
         updateAssociatedFines();
         document.getElementById('reportModal').classList.add('active');
     }
@@ -1852,7 +2005,7 @@
                 <div style="background: rgba(33, 150, 243, 0.1); padding: 10px; border-radius: 5px; margin-bottom: 10px; border-left: 3px solid #2196f3;">
                     <strong style="color: #2196f3;">${m.nombre}</strong> (ID: ${m.idSancionado})
                     <div style="color: #90caf9; font-size: 0.9em; margin-top: 5px;">
-                        Total: ${m.totalCantidad.toLocaleString('es-ES')} | ${m.totalSentencia} meses
+                        Total: $${m.totalCantidad.toLocaleString('es-ES')} | ${m.totalSentencia} meses
                     </div>
                 </div>
             `).join('');
@@ -1862,48 +2015,103 @@
     document.getElementById('suspectName')?.addEventListener('input', updateAssociatedFines);
     document.getElementById('suspectDNI')?.addEventListener('input', updateAssociatedFines);
 
-    async function saveReport() {
-        const report = {
-            id: Date.now(),
-            type: 'informe',
-            number: document.getElementById('caseNumber').value,
-            status: document.getElementById('caseStatus').value,
-            title: document.getElementById('caseTitle').value,
-            detective: document.getElementById('caseDetective').value,
-            date: document.getElementById('caseDate').value,
-            summary: document.getElementById('caseSummary').value,
-            suspect: {
-                name: document.getElementById('suspectName').value,
-                dni: document.getElementById('suspectDNI').value,
-                description: document.getElementById('suspectDescription').value
-            }
-        };
-    
-        if (!report.number || !report.title || !report.detective || !report.date || !report.summary) {
-            alert('❌ Por favor completa todos los campos obligatorios');
-            return;
+async function saveReport() {
+    // Recoger vehículos
+    const vehicles = [];
+    document.querySelectorAll('.vehicle-item').forEach(item => {
+        const name = item.querySelector('.vehicle-name').value.trim();
+        const model = item.querySelector('.vehicle-model').value.trim();
+        const plate = item.querySelector('.vehicle-plate').value.trim();
+        if (name || model || plate) {
+            vehicles.push({ name, model, plate });
         }
+    });
+
+// Recoger evidencias con imágenes convertidas a Base64
+    const evidences = [];
+    const evidenceItems = document.querySelectorAll('.evidence-item');
     
-        try {
-            if (editingIndex !== null) {
-                const reportToUpdate = reports[editingIndex];
-                await window.db.collection('reports').doc(reportToUpdate.firestoreId).update(report);
-                reports[editingIndex] = { ...report, firestoreId: reportToUpdate.firestoreId };
-                alert('✅ Informe actualizado');
-            } else {
-                const docRef = await window.db.collection('reports').add(report);
-                reports.unshift({ ...report, firestoreId: docRef.id });
-                alert('✅ Informe añadido correctamente');
-            }
+    for (const item of evidenceItems) {
+        const file = item.querySelector('.evidence-file').files[0];
+        const description = item.querySelector('.evidence-description').value.trim();
         
-            closeReportModal();
-            renderReports();
-            updateStats();
-        } catch (error) {
-            console.error('Error guardando informe:', error);
-            alert('❌ Error al guardar el informe');
+        if (file || description) {
+            let imageData = null;
+            
+            // Convertir imagen a Base64 si existe
+            if (file) {
+                try {
+                    imageData = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve(e.target.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                } catch (error) {
+                    console.error('Error al leer el archivo:', error);
+                }
+            }
+            
+            evidences.push({
+                filename: file?.name || '',
+                description: description,
+                imageData: imageData // Base64 de la imagen
+            });
         }
     }
+
+    const report = {
+        id: Date.now(),
+        type: 'informe',
+        number: document.getElementById('caseNumber').value,
+        status: document.getElementById('caseStatus').value,
+        title: document.getElementById('caseTitle').value,
+        detective: document.getElementById('caseDetective').value,
+        date: document.getElementById('caseDate').value,
+        summary: document.getElementById('caseSummary').value,
+        suspect: {
+            name: document.getElementById('suspectName').value,
+            dni: document.getElementById('suspectDNI').value,
+            gender: document.getElementById('suspectGender').value,
+            state: document.getElementById('suspectState').value,
+            build: document.getElementById('suspectBuild').value,
+            birthdate: document.getElementById('suspectBirthdate').value,
+            nationality: document.getElementById('suspectNationality').value,
+            maritalStatus: document.getElementById('suspectMaritalStatus').value,
+            phone: document.getElementById('suspectPhone').value,
+            residences: document.getElementById('suspectResidences').value,
+            businesses: document.getElementById('suspectBusinesses').value,
+            description: document.getElementById('suspectDescription').value
+        },
+        vehicles: vehicles,
+        evidences: evidences
+    };
+
+    if (!report.number || !report.title || !report.detective || !report.date || !report.summary) {
+        alert('❌ Por favor completa todos los campos obligatorios');
+        return;
+    }
+
+    try {
+        if (editingIndex !== null) {
+            const reportToUpdate = reports[editingIndex];
+            await window.db.collection('reports').doc(reportToUpdate.firestoreId).update(report);
+            reports[editingIndex] = { ...report, firestoreId: reportToUpdate.firestoreId };
+            alert('✅ Informe actualizado');
+        } else {
+            const docRef = await window.db.collection('reports').add(report);
+            reports.unshift({ ...report, firestoreId: docRef.id });
+            alert('✅ Informe añadido correctamente');
+        }
+    
+        closeReportModal();
+        renderReports();
+        updateStats();
+    } catch (error) {
+        console.error('Error guardando informe:', error);
+        alert('❌ Error al guardar el informe');
+    }
+}
 
     function renderReports() {
         const container = document.getElementById('reportsList');
@@ -1928,14 +2136,15 @@
                     <p style="color: #90caf9; margin-top: 10px;"><strong>Sospechoso:</strong> ${report.suspect.name}</p>
                 ` : ''}
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="btn btn-small" style="background: #2196f3;" onclick="viewReport(${index})">🔍 Ver Completo</button>
                     <button class="btn btn-small btn-edit" onclick="editReport(${index})">✏️ Editar</button>
-                    <button class="btn btn-small btn-danger" onclick="deleteReport(${index})">🗑️ Eliminar</button>
+                    <button class="btn btn-small btn-danger admin-only" onclick="deleteReport(${index})">🗑️ Eliminar</button>
                 </div>
             </div>
         `).join('');
     }
 
-    function editReport(index) {
+function editReport(index) {
         editingIndex = index;
         const report = reports[index];
         
@@ -1950,7 +2159,74 @@
         if (report.suspect) {
             document.getElementById('suspectName').value = report.suspect.name || '';
             document.getElementById('suspectDNI').value = report.suspect.dni || '';
+            document.getElementById('suspectGender').value = report.suspect.gender || '';
+            document.getElementById('suspectState').value = report.suspect.state || '';
+            document.getElementById('suspectBuild').value = report.suspect.build || '';
+            document.getElementById('suspectBirthdate').value = report.suspect.birthdate || '';
+            document.getElementById('suspectNationality').value = report.suspect.nationality || '';
+            document.getElementById('suspectMaritalStatus').value = report.suspect.maritalStatus || '';
+            document.getElementById('suspectPhone').value = report.suspect.phone || '';
+            document.getElementById('suspectResidences').value = report.suspect.residences || '';
+            document.getElementById('suspectBusinesses').value = report.suspect.businesses || '';
             document.getElementById('suspectDescription').value = report.suspect.description || '';
+        }
+        
+        // Cargar vehículos
+        const vehiclesContainer = document.getElementById('vehiclesContainer');
+        vehiclesContainer.innerHTML = '';
+        if (report.vehicles && report.vehicles.length > 0) {
+            report.vehicles.forEach(vehicle => {
+                const vehicleHTML = `
+                    <div class="vehicle-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <div class="form-group">
+                            <label>🚗 Vehículo:</label>
+                            <input type="text" class="vehicle-name" placeholder="Nombre del vehículo" value="${vehicle.name || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Modelo</label>
+                            <input type="text" class="vehicle-model" placeholder="Modelo" value="${vehicle.model || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label>Matrícula</label>
+                            <input type="text" class="vehicle-plate" placeholder="Matrícula" value="${vehicle.plate || ''}">
+                        </div>
+                        <button type="button" class="btn btn-small btn-danger" onclick="removeVehicle(this)" style="margin-top: 10px;">🗑️ Eliminar Vehículo</button>
+                    </div>
+                `;
+                vehiclesContainer.insertAdjacentHTML('beforeend', vehicleHTML);
+            });
+        } else {
+            addVehicle();
+        }
+        
+        // Cargar evidencias con imágenes
+        const evidencesContainer = document.getElementById('evidencesContainer');
+        evidencesContainer.innerHTML = '';
+        if (report.evidences && report.evidences.length > 0) {
+            report.evidences.forEach(evidence => {
+                const evidenceHTML = `
+                    <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <div class="form-group">
+                            <label>📸 Evidencia Fotográfica:</label>
+                            <input type="file" class="evidence-file" accept="image/*" onchange="updateFilename(this)">
+                            <span class="evidence-filename" style="color: #90caf9; margin-left: 10px;">${evidence.filename || 'Ningún archivo seleccionado'}</span>
+                            ${evidence.imageData ? `
+                                <div style="margin-top: 10px;">
+                                    <img src="${evidence.imageData}" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 2px solid #1976d2;">
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="form-group">
+                            <label>Descripción de la evidencia</label>
+                            <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia">${evidence.description || ''}</textarea>
+                        </div>
+                        <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+                    </div>
+                `;
+                evidencesContainer.insertAdjacentHTML('beforeend', evidenceHTML);
+            });
+        } else {
+            addEvidence();
         }
         
         updateAssociatedFines();
@@ -2059,20 +2335,31 @@
                 <p style="color: #ddd;"><strong>Fecha:</strong> ${caso.date}</p>
                 <p style="color: #ddd; margin-top: 10px;">${caso.summary || ''}</p>
                 ${caso.suspect && caso.suspect.name ? `<p style="color: #90caf9; margin-top: 10px;"><strong>Sospechoso:</strong> ${caso.suspect.name}</p>` : ''}
-            </div>
+                <div style="margin-top: 15px;">
+                    <button class="btn btn-small" style="background: #2196f3;" onclick="viewReportFromHistorial('${caso.number}')">🔍 Ver Completo</button>
+                </div>
+                </div>
         `;
     }
 
-    function renderHistorial() {
+function renderHistorial() {
         const container = document.getElementById('historialList');
         if (!container) return;
 
         const multasAgrupadas = agruparMultas(multas);
 
-        const allCases = [
-            ...reports.map(r => ({ ...r, type: 'informe' })),
-            ...multasAgrupadas
-        ];
+        // ✅ Filtrar informes si es abogado
+        let allCases = [];
+        if (userRole === 'abogado') {
+            // Solo multas para abogados
+            allCases = [...multasAgrupadas];
+        } else {
+            // Informes y multas para detective/admin
+            allCases = [
+                ...reports.map(r => ({ ...r, type: 'informe' })),
+                ...multasAgrupadas
+            ];
+        }
 
         if (allCases.length === 0) {
             container.innerHTML = '<p style="text-align: center; color: #999; padding: 40px; font-style: italic;">No hay casos registrados</p>';
@@ -2092,10 +2379,16 @@
 
         const multasAgrupadas = agruparMultas(multas);
 
-        const allCases = [
-            ...reports.map(r => ({ ...r, type: 'informe' })),
-            ...multasAgrupadas
-        ];
+        // ✅ Filtrar informes si es abogado
+        let allCases = [];
+        if (userRole === 'abogado') {
+            allCases = [...multasAgrupadas];
+        } else {
+            allCases = [
+                ...reports.map(r => ({ ...r, type: 'informe' })),
+                ...multasAgrupadas
+            ];
+        }
 
         const filtered = allCases.filter(caso => {
             if (caso.type === 'informe') {
@@ -2560,14 +2853,14 @@ function renderTable(data, searchTerm = '') {
         // Obtener arrays de números: [1, 27] vs [1, 27, 1]
         const numsA = extractArticleNumber(a.articulo);
         const numsB = extractArticleNumber(b.articulo);
-            
+
         // Comparar nivel por nivel
         for (let i = 0; i < Math.max(numsA.length, numsB.length); i++) {
             const numA = numsA[i] || 0;
             const numB = numsB[i] || 0;
             if (numA !== numB) return numA - numB;
         }
-        
+
         return 0;
     });
 
@@ -2900,6 +3193,64 @@ function renderTable(data, searchTerm = '') {
         event.target.value = '';
     }
 
+    // ==================== FUNCIONES AUXILIARES PARA INFORMES ====================
+
+        // Funciones para vehículos
+        function addVehicle() {
+            const container = document.getElementById('vehiclesContainer');
+            const vehicleHTML = `
+                <div class="vehicle-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <div class="form-group">
+                        <label>🚗 Vehículo:</label>
+                        <input type="text" class="vehicle-name" placeholder="Nombre del vehículo">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" class="vehicle-model" placeholder="Modelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Matrícula</label>
+                        <input type="text" class="vehicle-plate" placeholder="Matrícula">
+                    </div>
+                    <button type="button" class="btn btn-small btn-danger" onclick="removeVehicle(this)" style="margin-top: 10px;">🗑️ Eliminar Vehículo</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', vehicleHTML);
+        }
+
+        function removeVehicle(button) {
+            button.closest('.vehicle-item').remove();
+        }
+
+        // Funciones para evidencias
+        function addEvidence() {
+            const container = document.getElementById('evidencesContainer');
+            const evidenceHTML = `
+                <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <div class="form-group">
+                        <label>📸 Evidencia Fotográfica:</label>
+                        <input type="file" class="evidence-file" accept="image/*" onchange="updateFilename(this)">
+                        <span class="evidence-filename" style="color: #90caf9; margin-left: 10px;">Ningún archivo seleccionado</span>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción de la evidencia</label>
+                        <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', evidenceHTML);
+        }
+
+        function removeEvidence(button) {
+            button.closest('.evidence-item').remove();
+        }
+
+        function updateFilename(input) {
+            const filename = input.files[0]?.name || 'Ningún archivo seleccionado';
+            input.nextElementSibling.textContent = filename;
+        }
+
     // ==================== LOGIN + ROLES ====================
     const PASS_LIMITED = "8c98643ca577d8ef2f5c4c0229c9301a223511ae4b089b5abbe8bbd000c93c84";
     const PASS_FULL = "99b57e143b81ec6b426fd04d91ac94a852a842e536cfe11df2fed0099f6eebda";
@@ -3018,7 +3369,21 @@ function renderTable(data, searchTerm = '') {
         if (indicator) {
             indicator.textContent = userRole ? `Rol: ${userRole}` : '';
         }
-    }
+
+         // Activar la primera sección visible según el rol
+            if (userRole === 'abogado') {
+                showSection('historial');
+            } else if (userRole === 'limited' || userRole === 'full') {
+                showSection('informes');
+            }
+
+            // ✅ AÑADIR ESTO
+            // Renderizar historial DESPUÉS de aplicar permisos
+            if (dataLoaded) {
+                renderHistorial();
+            }
+        }
+    
 
     // ==================== INICIALIZACIÓN ====================
     document.addEventListener('DOMContentLoaded', function() {
@@ -3038,6 +3403,158 @@ function renderTable(data, searchTerm = '') {
 
         try { renderMultaActual(); } catch(e) {}
     });
-</script>
+        // Funciones para vehículos
+        function addVehicle() {
+            const container = document.getElementById('vehiclesContainer');
+            const vehicleHTML = `
+                <div class="vehicle-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <div class="form-group">
+                        <label>🚗 Vehículo:</label>
+                        <input type="text" class="vehicle-name" placeholder="Nombre del vehículo">
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" class="vehicle-model" placeholder="Modelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Matrícula</label>
+                        <input type="text" class="vehicle-plate" placeholder="Matrícula">
+                    </div>
+                    <button type="button" class="btn btn-small btn-danger" onclick="removeVehicle(this)" style="margin-top: 10px;">🗑️ Eliminar Vehículo</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', vehicleHTML);
+        }
+
+        function removeVehicle(button) {
+            button.closest('.vehicle-item').remove();
+        }
+
+        function addEvidence() {
+            const container = document.getElementById('evidencesContainer');
+            const uniqueId = 'evidence-' + Date.now();
+            const evidenceHTML = `
+                <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <div class="form-group">
+                        <label>📸 Evidencia Fotográfica:</label>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                            <label for="${uniqueId}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
+                                📁 Seleccionar Imagen
+                            </label>
+                            <input type="file" id="${uniqueId}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
+                            <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción de la evidencia</label>
+                        <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', evidenceHTML);
+        }
+
+        // Inicializar eventos de archivos
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.evidence-file').forEach(input => {
+                input.addEventListener('change', function() {
+                    updateFilename(this);
+                });
+            });
+        });
+
+        function viewReport(index) {
+        const report = reports[index];
+        showReportModal(report);
+    }
+
+    function viewReportFromHistorial(caseNumber) {
+        const report = reports.find(r => r.number === caseNumber);
+        if (report) {
+            showReportModal(report);
+        }
+    }
+
+    function showReportModal(report) {
+        let modalHTML = `
+            <div class="edit-modal active" id="viewReportModal" style="z-index: 4000;">
+                <div class="edit-modal-content" style="max-width: 900px;">
+                    <h2 style="color: #2196f3; text-align: center; margin-bottom: 30px;">🔍 INFORME COMPLETO</h2>
+                    
+                    <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3 style="color: #64b5f6; margin-bottom: 15px;">📋 Información General</h3>
+                        <p style="color: #ddd; margin: 8px 0;"><strong>Número de Caso:</strong> ${report.number}</p>
+                        <p style="color: #ddd; margin: 8px 0;"><strong>Estado:</strong> <span class="status ${report.status}">${getStatusText(report.status)}</span></p>
+                        <p style="color: #ddd; margin: 8px 0;"><strong>Título:</strong> ${report.title}</p>
+                        <p style="color: #ddd; margin: 8px 0;"><strong>Detective:</strong> ${report.detective}</p>
+                        <p style="color: #ddd; margin: 8px 0;"><strong>Fecha:</strong> ${report.date}</p>
+                        <p style="color: #ddd; margin: 8px 0;"><strong>Resumen:</strong></p>
+                        <p style="color: #ddd; margin: 8px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">${report.summary}</p>
+                    </div>
+                    
+                    ${report.suspect && (report.suspect.name || report.suspect.dni) ? `
+                        <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h3 style="color: #64b5f6; margin-bottom: 15px;">🧾 Información del Sospechoso</h3>
+                            ${report.suspect.name ? `<p style="color: #ddd; margin: 8px 0;"><strong>Nombre:</strong> ${report.suspect.name}</p>` : ''}
+                            ${report.suspect.dni ? `<p style="color: #ddd; margin: 8px 0;"><strong>DNI:</strong> ${report.suspect.dni}</p>` : ''}
+                            ${report.suspect.gender ? `<p style="color: #ddd; margin: 8px 0;"><strong>Género:</strong> ${report.suspect.gender}</p>` : ''}
+                            ${report.suspect.state ? `<p style="color: #ddd; margin: 8px 0;"><strong>Estado:</strong> ${report.suspect.state}</p>` : ''}
+                            ${report.suspect.build ? `<p style="color: #ddd; margin: 8px 0;"><strong>Contextura:</strong> ${report.suspect.build}</p>` : ''}
+                            ${report.suspect.birthdate ? `<p style="color: #ddd; margin: 8px 0;"><strong>Fecha de Nacimiento:</strong> ${report.suspect.birthdate}</p>` : ''}
+                            ${report.suspect.nationality ? `<p style="color: #ddd; margin: 8px 0;"><strong>Nacionalidad:</strong> ${report.suspect.nationality}</p>` : ''}
+                            ${report.suspect.maritalStatus ? `<p style="color: #ddd; margin: 8px 0;"><strong>Estado Civil:</strong> ${report.suspect.maritalStatus}</p>` : ''}
+                            ${report.suspect.phone ? `<p style="color: #ddd; margin: 8px 0;"><strong>Teléfono:</strong> ${report.suspect.phone}</p>` : ''}
+                            ${report.suspect.residences ? `<p style="color: #ddd; margin: 8px 0;"><strong>Residencias:</strong></p><p style="color: #ddd; margin: 8px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">${report.suspect.residences}</p>` : ''}
+                            ${report.suspect.businesses ? `<p style="color: #ddd; margin: 8px 0;"><strong>Negocios:</strong></p><p style="color: #ddd; margin: 8px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">${report.suspect.businesses}</p>` : ''}
+                            ${report.suspect.description ? `<p style="color: #ddd; margin: 8px 0;"><strong>Descripción Física:</strong></p><p style="color: #ddd; margin: 8px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">${report.suspect.description}</p>` : ''}
+                        </div>
+                    ` : ''}
+                    
+                    ${report.vehicles && report.vehicles.length > 0 ? `
+                        <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h3 style="color: #64b5f6; margin-bottom: 15px;">🚗 Vehículos Asociados</h3>
+                            ${report.vehicles.map(v => `
+                                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                                    ${v.name ? `<p style="color: #ddd; margin: 5px 0;"><strong>Vehículo:</strong> ${v.name}</p>` : ''}
+                                    ${v.model ? `<p style="color: #ddd; margin: 5px 0;"><strong>Modelo:</strong> ${v.model}</p>` : ''}
+                                    ${v.plate ? `<p style="color: #ddd; margin: 5px 0;"><strong>Matrícula:</strong> ${v.plate}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    ${report.evidences && report.evidences.length > 0 ? `
+                        <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                            <h3 style="color: #64b5f6; margin-bottom: 15px;">📸 Evidencias Fotográficas</h3>
+                            ${report.evidences.map((e, idx) => `
+                                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <p style="color: #2196f3; font-weight: bold; margin-bottom: 10px;">Evidencia #${idx + 1}</p>
+                                    ${e.imageData ? `
+                                        <img src="${e.imageData}" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 2px solid #1976d2; margin-bottom: 10px; display: block;">
+                                    ` : ''}
+                                    ${e.filename ? `<p style="color: #90caf9; margin: 5px 0;"><strong>Archivo:</strong> ${e.filename}</p>` : ''}
+                                    ${e.description ? `<p style="color: #ddd; margin: 5px 0;"><strong>Descripción:</strong> ${e.description}</p>` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    
+                    <button class="btn" onclick="closeViewReportModal()" style="width: 100%; margin-top: 20px;">✖ Cerrar</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+
+    function closeViewReportModal() {
+        const modal = document.getElementById('viewReportModal');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    </script>
 </body>
 </html>
