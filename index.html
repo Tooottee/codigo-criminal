@@ -2364,36 +2364,56 @@
         });
     }
 
-    async function addArticle(event) {
-        event.preventDefault();
-
-        const article = {
-            id: Date.now(),
-            capitulo: document.getElementById('capitulo').value,
-            articulo: document.getElementById('articulo').value,
-            descripcion: document.getElementById('descripcion').value,
-            cantidad: document.getElementById('cantidad').value,
-            sentencia: document.getElementById('sentencia').value
-        };
-    
-        if (!article.capitulo || !article.articulo || !article.descripcion || !article.cantidad || !article.sentencia) {
-            alert('Por favor, completa todos los campos obligatorios (*)');
-            return;
+        async function addArticle(event) {
+            event.preventDefault();
+        
+            const article = {
+                id: Date.now(),
+                capitulo: document.getElementById('capitulo').value,
+                articulo: document.getElementById('articulo').value,
+                descripcion: document.getElementById('descripcion').value,
+                cantidad: document.getElementById('cantidad').value,
+                sentencia: document.getElementById('sentencia').value
+            };
+        
+            if (!article.capitulo || !article.articulo || !article.descripcion || !article.cantidad || !article.sentencia) {
+                alert('Por favor, completa todos los campos obligatorios (*)');
+                return;
+            }
+        
+            try {
+                const docRef = await window.db.collection('articles').add(article);
+                articles.push({ ...article, firestoreId: docRef.id });
+            
+                document.getElementById('addCodeForm').reset();
+                
+                // ✅ REORDENAR después de añadir
+                articles.sort((a, b) => {
+                    const catNumA = extractCategoryNumber(a.capitulo);
+                    const catNumB = extractCategoryNumber(b.capitulo);
+                    
+                    if (catNumA !== catNumB) {
+                        return catNumA - catNumB;
+                    }
+                    
+                    const [majorA, minorA] = extractArticleNumber(a.articulo);
+                    const [majorB, minorB] = extractArticleNumber(b.articulo);
+                    
+                    if (majorA !== majorB) {
+                        return majorA - majorB;
+                    }
+                    
+                    return minorA - minorB;
+                });
+                
+                renderTable(articles);
+                alert('✓ Artículo añadido correctamente');
+            
+            } catch (error) {
+                console.error('Error añadiendo artículo:', error);
+                alert('❌ Error al añadir el artículo');
+            }
         }
-    
-        try {
-            const docRef = await window.db.collection('articles').add(article);
-            articles.push({ ...article, firestoreId: docRef.id });
-
-            document.getElementById('addCodeForm').reset();
-            alert('✓ Artículo añadido correctamente');
-
-            renderTable(articles);
-        } catch (error) {
-            console.error('Error añadiendo artículo:', error);
-            alert('❌ Error al añadir el artículo');
-        }
-    }
 
     async function deleteArticle(id) {
         if (!confirm('¿Estás seguro de eliminar este artículo?')) return;
