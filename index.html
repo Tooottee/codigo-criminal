@@ -1681,56 +1681,63 @@
 
     // ==================== FUNCIONES DE FIRESTORE ====================
     async function loadDataFromFirestore() {
-        if (!window.db) {
-            console.error('Firebase no está inicializado');
-            return;
-        }
-    
-        try {
-            const reportsSnapshot = await window.db.collection('reports').get();
-            reports = reportsSnapshot.docs.map(doc => ({
-                firestoreId: doc.id,
-                ...doc.data()
-            }));
-        
-            const multasSnapshot = await window.db.collection('multas').get();
-            multas = multasSnapshot.docs.map(doc => ({
-                firestoreId: doc.id,
-                ...doc.data()
-            }));
-        
-            const articlesSnapshot = await window.db.collection('articles').get();
-            articles = articlesSnapshot.docs.map(doc => ({
-                firestoreId: doc.id,
-                ...doc.data()
-            }));
-        
-            const categoriesSnapshot = await window.db.collection('categories').get();
-            categories = categoriesSnapshot.docs.map(doc => doc.data().name);
-        
-            const ranksSnapshot = await window.db.collection('ranks').get();
-            ranks = ranksSnapshot.docs.map(doc => ({
-                firestoreId: doc.id,
-                ...doc.data()
-            }));
-        
-            dataLoaded = true;
-        
-            renderReports();
-            renderHistorial();
-            updateStats();
-            renderTable(articles);
-            renderCategories();
-            updateCategoryDropdowns();
-            renderHistorialMultas();
-            renderRanks();
-        
-            console.log('✅ Datos cargados desde Firestore');
-        } catch (error) {
-            console.error('❌ Error cargando datos:', error);
-            alert('Error al cargar los datos de la base de datos');
-        }
+    if (!window.db) {
+        console.error('Firebase no está inicializado');
+        return;
     }
+
+    try {
+        const reportsSnapshot = await window.db.collection('reports').get();
+        reports = reportsSnapshot.docs.map(doc => ({
+            firestoreId: doc.id,
+            ...doc.data()
+        }));
+    
+        const multasSnapshot = await window.db.collection('multas').get();
+        multas = multasSnapshot.docs.map(doc => ({
+            firestoreId: doc.id,
+            ...doc.data()
+        }));
+    
+        const articlesSnapshot = await window.db.collection('articles').get();
+        articles = articlesSnapshot.docs.map(doc => ({
+            firestoreId: doc.id,
+            ...doc.data()
+        }));
+    
+        const categoriesSnapshot = await window.db.collection('categories').get();
+        categories = categoriesSnapshot.docs.map(doc => doc.data().name);
+        
+        // ✅ AÑADE ESTAS LÍNEAS AQUÍ
+        categories.sort((a, b) => {
+            const numA = parseInt(a.match(/^\d+/)?.[0] || 999);
+            const numB = parseInt(b.match(/^\d+/)?.[0] || 999);
+            return numA - numB;
+        });
+    
+        const ranksSnapshot = await window.db.collection('ranks').get();
+        ranks = ranksSnapshot.docs.map(doc => ({
+            firestoreId: doc.id,
+            ...doc.data()
+        }));
+    
+        dataLoaded = true;
+    
+        renderReports();
+        renderHistorial();
+        updateStats();
+        renderTable(articles);
+        renderCategories();
+        updateCategoryDropdowns();
+        renderHistorialMultas();
+        renderRanks();
+    
+        console.log('✅ Datos cargados desde Firestore');
+    } catch (error) {
+        console.error('❌ Error cargando datos:', error);
+        alert('Error al cargar los datos de la base de datos');
+    }
+}
 
      // AÑADE ESTA FUNCIÓN AQUÍ ⬇️
     function showSection(sectionId) {
