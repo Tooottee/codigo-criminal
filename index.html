@@ -2860,208 +2860,129 @@
             return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         }
 
-        /* Comprueba contraseña cuando el usuario hace click */
-        async function checkPassword() {
-            const pass = document.getElementById("passwordInput").value || "";
-            const hash = await sha256(pass);
-        
-            if (hash === PASS_LIMITED) {
-                userRole = "limited";
-                persistRole();
-                closeLogin();
-            }
-            else if (hash === PASS_FULL) {
-                userRole = "full";
-                persistRole();
-                closeLogin();
-            }
-            else if (hash === PASS_ABOGADO) {
-                userRole = "abogado";
-                persistRole();
-                closeLogin();
-            }
-            else {
-                const err = document.getElementById("loginError");
-                err.style.display = "block";
-                err.textContent = "Contraseña incorrecta";
-            }
-        }
+        async function sha256(message) {
+        const msgBuffer = new TextEncoder().encode(message);
+        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
-        /* Función helper para pruebas rápidas (rellena input) */
-        function fillDemo() {
-            // Rellena con la contraseña limitada por defecto para test rápido
-            document.getElementById("passwordInput").value = "detectives123";
+    async function checkPassword() {
+        const pass = document.getElementById("passwordInput").value || "";
+        const hash = await sha256(pass);
+    
+        if (hash === PASS_LIMITED) {
+            userRole = "limited";
+            persistRole();
+            closeLogin();
         }
-
-        /* Cierra pantalla de login y aplica permisos */
-        function closeLogin() {
-            const loginScreen = document.getElementById("loginScreen");
-            if (loginScreen) loginScreen.style.display = "none";
-            applyPermissions();
+        else if (hash === PASS_FULL) {
+            userRole = "full";
+            persistRole();
+            closeLogin();
         }
+        else if (hash === PASS_ABOGADO) {
+            userRole = "abogado";
+            persistRole();
+            closeLogin();
+        }
+        else {
+            const err = document.getElementById("loginError");
+            err.style.display = "block";
+            err.textContent = "Contraseña incorrecta";
+        }
+    }
 
-        /* Persistir rol en sessionStorage para mantener sesión en recarga */
-        function persistRole() {
-            try {
-                sessionStorage.setItem('userRole', userRole);
-            } catch (e) {
-                console.warn('No se pudo persistir sesión:', e);
+    function closeLogin() {
+        const loginScreen = document.getElementById("loginScreen");
+        if (loginScreen) loginScreen.style.display = "none";
+        applyPermissions();
+    }
+
+    function persistRole() {
+        try {
+            sessionStorage.setItem('userRole', userRole);
+        } catch (e) {
+            console.warn('No se pudo persistir sesión:', e);
+        }
+    }
+
+    function restoreSessionIfExists() {
+        try {
+            const r = sessionStorage.getItem('userRole');
+            if (r === 'limited' || r === 'full' || r === 'abogado') {
+                userRole = r;
+                const loginScreen = document.getElementById("loginScreen");
+                if (loginScreen) loginScreen.style.display = "none";
+                applyPermissions();
             }
+        } catch (e) {
+            console.warn('Error restaurando sesión:', e);
         }
+    }
 
-        /* Restaurar sesión al cargar la página (si existe) */
-        function restoreSessionIfExists() {
-            try {
-                const r = sessionStorage.getItem('userRole');
-                if (r === 'limited' || r === 'full' || r === 'abogado') {
-                    userRole = r;
-                    const loginScreen = document.getElementById("loginScreen");
-                    if (loginScreen) loginScreen.style.display = "none";
-                    applyPermissions();
-                }
-            } catch (e) {
-                console.warn('Error restaurando sesión:', e);
-            }
+    function logout() {
+        userRole = null;
+        try { sessionStorage.removeItem('userRole'); } catch(e){}
+        const loginScreen = document.getElementById("loginScreen");
+        if (loginScreen) loginScreen.style.display = 'flex';
+        const p = document.getElementById("passwordInput");
+        if (p) p.value = '';
+        const all = document.querySelectorAll('.admin-only, .detective-only');
+        all.forEach(e => e.style.display = 'none');
+    }
+
+    function applyPermissions() {
+        const allDetective = document.querySelectorAll('.detective-only');
+        const allAdmin = document.querySelectorAll('.admin-only');
+        const allDetectiveBlock = document.querySelectorAll('.detective-block');
+        const allAbogado = document.querySelectorAll('.abogado-only');
+    
+        allDetective.forEach(e => e.style.display = 'none');
+        allAdmin.forEach(e => e.style.display = 'none');
+        allDetectiveBlock.forEach(e => e.style.display = 'none');
+        allAbogado.forEach(e => e.style.display = 'none');
+    
+        if (userRole === 'limited') {
+            allDetective.forEach(e => e.style.display = 'block');
+        } else if (userRole === 'full') {
+            allDetective.forEach(e => e.style.display = 'block');
+            allAdmin.forEach(e => e.style.display = 'block');
+            allDetectiveBlock.forEach(e => e.style.display = 'block');
+        } else if (userRole === 'abogado') {
+            allAbogado.forEach(e => e.style.display = 'block');
         }
+    
+        const addMultaBtns = document.querySelectorAll('[data-action="add-multa"]');
+        addMultaBtns.forEach(b => { b.disabled = (userRole !== 'full'); });
+    
+        const addInformeBtns = document.querySelectorAll('[data-action="add-informe"]');
+        addInformeBtns.forEach(b => { b.disabled = (userRole === null || userRole === 'abogado'); });
+    
+        const indicator = document.getElementById('userRoleIndicator');
+        if (indicator) {
+            indicator.textContent = userRole ? `Rol: ${userRole}` : '';
+        }
+    }
 
-        /* Logout: borrar sesión y mostrar login otra vez */
-        function logout() {
-            userRole = null;
-            try { sessionStorage.removeItem('userRole'); } catch(e){}
-            // mostrar login
-            const loginScreen = document.getElementById("loginScreen");
-            if (loginScreen) loginScreen.style.display = 'flex';
-            // opcional: limpiar input
-            const p = document.getElementById("passwordInput");
-            if (p) p.value = '';
-            // ocultar elementos por seguridad hasta nuevo login
-            const all = document.querySelectorAll('.admin-only, .detective-only');
+    // ==================== INICIALIZACIÓN ====================
+    document.addEventListener('DOMContentLoaded', function() {
+        restoreSessionIfExists();
+    
+        if (!userRole) {
+            const all = document.querySelectorAll('.admin-only, .detective-only, .detective-block');
             all.forEach(e => e.style.display = 'none');
         }
+    
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.addEventListener('click', logout);
 
-        /* ===========================
-           applyPermissions — Ajustado al requerimiento
-           - limited (detectives123): puede ver MULTAS, HISTORIAL DE INFORMES, INFORMES; puede AÑADIR INFORMES.
-           - full (detectivesls2025*): todo (mostrar admin-only, permitir crear y borrar).
-           Implementación por clases:
-             .detective-only   -> visible para limited y full (visibles después de login)
-             .admin-only       -> visible solo para full
-             .detective-block  -> visible solo para full (oculto para limited)
-           =========================== */
-            function applyPermissions() {
-                const allDetective = document.querySelectorAll('.detective-only');
-                const allAdmin = document.querySelectorAll('.admin-only');
-                const allDetectiveBlock = document.querySelectorAll('.detective-block');
-                const allAbogado = document.querySelectorAll('.abogado-only');
-            
-                // Ocultar todo por defecto
-                allDetective.forEach(e => e.style.display = 'none');
-                allAdmin.forEach(e => e.style.display = 'none');
-                allDetectiveBlock.forEach(e => e.style.display = 'none');
-                allAbogado.forEach(e => e.style.display = 'none');
-            
-                if (userRole === 'limited') {
-                    // Detective limitado: ver multas, informes, historial
-                    allDetective.forEach(e => e.style.display = 'block');
+        setTimeout(() => {
+            loadDataFromFirestore();
+        }, 1000);
 
-                } else if (userRole === 'full') {
-                    // Administrador: ver TODO
-                    allDetective.forEach(e => e.style.display = 'block');
-                    allAdmin.forEach(e => e.style.display = 'block');
-                    allDetectiveBlock.forEach(e => e.style.display = 'block');
-
-                } else if (userRole === 'abogado') {
-                    // Abogado: solo historial y código criminal (lectura)
-                    allAbogado.forEach(e => e.style.display = 'block');
-                }
-            
-                // Desactivar botones según rol
-                const addMultaBtns = document.querySelectorAll('[data-action="add-multa"]');
-                addMultaBtns.forEach(b => { b.disabled = (userRole !== 'full'); });
-            
-                const addInformeBtns = document.querySelectorAll('[data-action="add-informe"]');
-                addInformeBtns.forEach(b => { b.disabled = (userRole === null || userRole === 'abogado'); });
-            
-                // Mostrar indicador de rol
-                const indicator = document.getElementById('userRoleIndicator');
-                if (indicator) {
-                    indicator.textContent = userRole ? `Rol: ${userRole}` : '';
-                }
-            }
-
-        /* ===========================
-           Wrappers seguros para acciones críticas
-           - safeAddInforme(data): permite limited y full
-           - safeAddMulta(data): permite solo full
-           Estos wrappers comprueban el rol y devuelven boolean si se añadió.
-           Reemplaza tus llamadas directas a addInforme/addMulta por estas.
-           =========================== */
-
-        /* Ejemplo de implementaciones mínimas; adapta a tu lógica real (guardar en array, persistir, etc.) */
-        function safeAddInforme(informeObj) {
-            if (!userRole) { alert('No autorizado. Inicia sesión.'); return false; }
-            // limited y full pueden añadir informes
-            // aquí llamas a tu función real que añade informes, por ejemplo addInforme(informeObj)
-            if (typeof addInforme === 'function') {
-                addInforme(informeObj);
-            } else {
-                // si no existe addInforme, simulamos push en reports si existe la variable global
-                if (Array.isArray(window.reports)) window.reports.push(informeObj);
-            }
-            // después de añadir, refrescamos vista
-            if (typeof renderHistorial === 'function') renderHistorial();
-            return true;
-        }
-
-        function safeAddMulta(multaObj) {
-            if (userRole !== 'full') { alert('No tienes permiso para crear multas.'); return false; }
-            // solo full puede añadir multas
-            if (typeof addMulta === 'function') {
-                addMulta(multaObj);
-            } else {
-                if (Array.isArray(window.multas)) window.multas.push(multaObj);
-            }
-            if (typeof renderHistorial === 'function') renderHistorial();
-            return true;
-        }
-
-        /* ===========================
-           Inicialización al cargar la página
-           =========================== */
-        document.addEventListener('DOMContentLoaded', function() {
-            // Restaurar sesión si existe
-            restoreSessionIfExists();
-        
-            // Si no hay sesión, el login permanecerá visible
-            // Si la pantalla de login no existe, aplicamos permisos de todos ocultos
-            if (!userRole) {
-            // ocultar elementos por defecto hasta el login
-                const all = document.querySelectorAll('.admin-only, .detective-only, .detective-block');
-                all.forEach(e => e.style.display = 'none');
-            }
-        
-            // Optional: asignar logout si existe botón con id logoutBtn
-            const logoutBtn = document.getElementById('logoutBtn');
-            if (logoutBtn) logoutBtn.addEventListener('click', logout);
-        });
-        function showSection(sectionId) {
-    // Ocultar todas las secciones
-    document.querySelectorAll('.section').forEach(sec => {
-        sec.classList.remove('active');
+        try { renderMultaActual(); } catch(e) {}
     });
-
-    // Mostrar la sección seleccionada
-    const target = document.getElementById(sectionId);
-    if (target) target.classList.add('active');
-
-    // Actualizar botones activos de navegación
-    document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
-    const activeBtn = document.querySelector(`button[onclick="showSection('${sectionId}')"]`);
-    if (activeBtn) activeBtn.classList.add('active');
-}
-    </script>
+</script>
 </body>
 </html>
