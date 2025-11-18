@@ -2386,26 +2386,26 @@
                 articles.push({ ...article, firestoreId: docRef.id });
             
                 document.getElementById('addCodeForm').reset();
-                
+
                 // ✅ REORDENAR después de añadir
                 articles.sort((a, b) => {
                     const catNumA = extractCategoryNumber(a.capitulo);
                     const catNumB = extractCategoryNumber(b.capitulo);
-                    
+
                     if (catNumA !== catNumB) {
                         return catNumA - catNumB;
                     }
-                    
+
                     const [majorA, minorA] = extractArticleNumber(a.articulo);
                     const [majorB, minorB] = extractArticleNumber(b.articulo);
-                    
+
                     if (majorA !== majorB) {
                         return majorA - majorB;
                     }
-                    
+
                     return minorA - minorB;
                 });
-                
+
                 renderTable(articles);
                 alert('✓ Artículo añadido correctamente');
             
@@ -2528,76 +2528,78 @@
         renderTable(articles);
     }
 
-    function renderTable(data, searchTerm = '') {
-        const tbody = document.getElementById('codeTableBody');
+function renderTable(data, searchTerm = '') {
+    const tbody = document.getElementById('codeTableBody');
+    
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No hay artículos registrados.</td></tr>';
+        return;
+    }
+
+    // Ordenar los datos primero
+    data.sort((a, b) => {
+        const catNumA = extractCategoryNumber(a.capitulo);
+        const catNumB = extractCategoryNumber(b.capitulo);
         
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="no-data">No hay artículos registrados.</td></tr>';
-            return;
+        if (catNumA !== catNumB) {
+            return catNumA - catNumB;
+        }
+        
+        const [majorA, minorA] = extractArticleNumber(a.articulo);
+        const [majorB, minorB] = extractArticleNumber(b.articulo);
+        
+        if (majorA !== majorB) {
+            return majorA - majorB;
+        }
+        
+        return minorA - minorB;
+    });
+
+    let html = '';
+    let lastChapter = '';
+
+    data.forEach((article, index) => {
+        // Solo mostrar header de capítulo cuando cambia Y tiene capítulo
+        if (article.capitulo && article.capitulo !== lastChapter) {
+            html += `
+                <tr class="section-header-row">
+                    <td colspan="5" class="section-header">
+                        ${article.capitulo}
+                        ${userRole === 'full' ? `
+                            <button class="edit-chapter-btn admin-only" onclick="editChapter('${article.capitulo.replace(/'/g, "\\'")}')">
+                                ✏️ Editar
+                            </button>
+                        ` : ''}
+                    </td>
+                </tr>`;
+            lastChapter = article.capitulo;
         }
 
-        data.sort((a, b) => {
-            const catNumA = extractCategoryNumber(a.capitulo);
-            const catNumB = extractCategoryNumber(b.capitulo);
-            
-            if (catNumA !== catNumB) {
-                return catNumA - catNumB;
-            }
-            
-            const [majorA, minorA] = extractArticleNumber(a.articulo);
-            const [majorB, minorB] = extractArticleNumber(b.articulo);
-            
-            if (majorA !== majorB) {
-                return majorA - majorB;
-            }
-            
-            return minorA - minorB;
-        });
+        const isFirst = index === 0;
+        const isLast = index === data.length - 1;
 
-        let html = '';
-        let lastChapter = '';
+        html += `
+            <tr>
+                <td class="article-number">${article.articulo}</td>
+                <td>${article.descripcion}</td>
+                <td>${parseInt(article.cantidad).toLocaleString('es-ES')}</td>
+                <td>${article.sentencia} MESES</td>
+                <td>
+                    ${userRole === 'full' ? `
+                        <div class="action-btns-group">
+                            <button class="move-btn admin-only" onclick="moveArticle(${article.id}, 'up')" ${isFirst ? 'disabled' : ''}>↑</button>
+                            <button class="move-btn admin-only" onclick="moveArticle(${article.id}, 'down')" ${isLast ? 'disabled' : ''}>↓</button>
+                            <button class="edit-btn admin-only" onclick="editArticle(${article.id})">EDITAR</button>
+                            <button class="eliminate-btn admin-only" onclick="deleteArticle(${article.id})">ELIMINAR</button>
+                        </div>
+                    ` : '<span style="color:#999; font-style:italic; font-size:12px;">Solo lectura</span>'}
+                </td>
+            </tr>
+        `;
+    });
 
-        data.forEach((article, index) => {
-            if (article.capitulo && article.capitulo !== lastChapter) {
-                html += `
-                    <tr class="section-header-row">
-                        <td colspan="5" class="section-header">
-                            ${article.capitulo}
-                            ${userRole === 'full' ? `
-                                <button class="edit-chapter-btn admin-only" onclick="editChapter('${article.capitulo.replace(/'/g, "\\'")}')">
-                                    ✏️ Editar
-                                </button>
-                            ` : ''}
-                        </td>
-                    </tr>`;
-                lastChapter = article.capitulo;
-            }
-
-            const isFirst = index === 0;
-            const isLast = index === data.length - 1;
-
-            html += `
-                <tr>
-                    <td class="article-number">${article.articulo}</td>
-                    <td>${article.descripcion}</td>
-                    <td>${parseInt(article.cantidad).toLocaleString('es-ES')}</td>
-                    <td>${article.sentencia} MESES</td>
-                    <td>
-                        ${userRole === 'full' ? `
-                            <div class="action-btns-group">
-                                <button class="move-btn admin-only" onclick="moveArticle(${article.id}, 'up')" ${isFirst ? 'disabled' : ''}>↑</button>
-                                <button class="move-btn admin-only" onclick="moveArticle(${article.id}, 'down')" ${isLast ? 'disabled' : ''}>↓</button>
-                                <button class="edit-btn admin-only" onclick="editArticle(${article.id})">EDITAR</button>
-                                <button class="eliminate-btn admin-only" onclick="deleteArticle(${article.id})">ELIMINAR</button>
-                            </div>
-                        ` : '<span style="color:#999; font-style:italic; font-size:12px;">Solo lectura</span>'}
-                    </td>
-                </tr>
-            `;
-        });
-
-        tbody.innerHTML = html;
-    }
+    tbody.innerHTML = html;
+}
 
     function searchInCode() {
         const searchTerm = document.getElementById('searchCode').value.toLowerCase();
