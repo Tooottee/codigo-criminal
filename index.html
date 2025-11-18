@@ -312,6 +312,20 @@
             transition: all 0.3s;
         }
 
+                /* Estilos para las opciones del desplegable */
+        .edit-form-group select option,
+        .form-group select option {
+            background-color: #0e2a47; /* Fondo moderno y oscuro */
+            color: #ffffff;            /* Texto legible */
+        }
+        
+        /* Hover (cuando el navegador lo permite) */
+        .edit-form-group select option:hover,
+        .form-group select option:hover {
+            background-color: #1a3f6c;
+        }
+
+
         .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
@@ -1647,26 +1661,9 @@
         <button type="button" class="btn" onclick="addVehicle()" style="background: #4caf50; margin-top: 10px;">➕ Añadir vehículo</button>
 
         <h3 style="color: #64b5f6; margin: 20px 0;">📸 Evidencias Fotográficas</h3>
-        
-        <div id="evidencesContainer">
-            <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                <div class="form-group">
-                    <label>📸 Evidencia Fotográfica:</label>
-                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <label for="evidence-file-${Date.now()}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
-                        📁 Seleccionar Imagen
-                    </label>
-                    <input type="file" id="evidence-file-${Date.now()}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
-                    <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
-                </div>
-            </div>
-                <div class="form-group">
-                    <label>Descripción de la evidencia</label>
-                    <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
-                </div>
-                <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
-            </div>
-        </div>
+
+        <!-- 🔥 AHORA EL CONTENEDOR ESTÁ LIMPIO Y SIN HTML ROTO -->
+        <div id="evidencesContainer"></div>
         
         <button type="button" class="btn" onclick="addEvidence()" style="background: #4caf50; margin-top: 10px;">➕ Añadir evidencia</button>
 
@@ -1681,6 +1678,7 @@
         </div>
     </div>
 </div>
+
 
     <!-- MODAL SELECCIÓN DE PESTAÑA TABLET -->
     <div class="modal-overlay" id="modalOverlay">
@@ -1966,11 +1964,16 @@
         // Limpiar evidencias - dejar solo una vacía
         document.getElementById('evidencesContainer').innerHTML = `
             <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                <div class="form-group">
-                    <label>📸 Evidencia Fotográfica:</label>
-                    <input type="file" class="evidence-file" accept="image/*" onchange="updateFilename(this)">
-                    <span class="evidence-filename" style="color: #90caf9; margin-left: 10px;">Ningún archivo seleccionado</span>
+             <div class="form-group">
+                <label>📸 Evidencia Fotográfica:</label>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label for="evidence-file-${Date.now()}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
+                        📁 Seleccionar Imagen
+                    </label>
+                    <input type="file" id="evidence-file-${Date.now()}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
+                    <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
                 </div>
+            </div>
                 <div class="form-group">
                     <label>Descripción de la evidencia</label>
                     <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
@@ -3285,25 +3288,30 @@ function renderTable(data, searchTerm = '') {
             button.closest('.vehicle-item').remove();
         }
 
-        // Funciones para evidencias
-        function addEvidence() {
-            const container = document.getElementById('evidencesContainer');
-            const evidenceHTML = `
-                <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                    <div class="form-group">
-                        <label>📸 Evidencia Fotográfica:</label>
-                        <input type="file" class="evidence-file" accept="image/*" onchange="updateFilename(this)">
-                        <span class="evidence-filename" style="color: #90caf9; margin-left: 10px;">Ningún archivo seleccionado</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Descripción de la evidencia</label>
-                        <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+function addEvidence() {
+    const container = document.getElementById('evidencesContainer');
+    const uniqueId = 'evidence-' + Date.now();
+    const evidenceHTML = `
+        <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+            <div class="form-group">
+                <label>📸 Evidencia Fotográfica:</label>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                    <label for="${uniqueId}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
+                        📁 Seleccionar Imagen
+                    </label>
+                    <input type="file" id="${uniqueId}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
+                    <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
                 </div>
-            `;
-            container.insertAdjacentHTML('beforeend', evidenceHTML);
-        }
+            </div>
+            <div class="form-group">
+                <label>Descripción de la evidencia</label>
+                <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
+            </div>
+            <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', evidenceHTML);
+}
 
         function removeEvidence(button) {
             button.closest('.evidence-item').remove();
@@ -3493,30 +3501,30 @@ function renderTable(data, searchTerm = '') {
             button.closest('.vehicle-item').remove();
         }
 
-        function addEvidence() {
-            const container = document.getElementById('evidencesContainer');
-            const uniqueId = 'evidence-' + Date.now();
-            const evidenceHTML = `
-                <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                    <div class="form-group">
-                        <label>📸 Evidencia Fotográfica:</label>
-                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
-                            <label for="${uniqueId}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
-                                📁 Seleccionar Imagen
-                            </label>
-                            <input type="file" id="${uniqueId}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
-                            <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Descripción de la evidencia</label>
-                        <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
-                    </div>
-                    <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+function addEvidence() {
+    const container = document.getElementById('evidencesContainer');
+    const uniqueId = 'evidence-' + Date.now();
+    const evidenceHTML = `
+        <div class="evidence-item" style="background: rgba(33, 150, 243, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+            <div class="form-group">
+                <label>📸 Evidencia Fotográfica:</label>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 8px;">
+                    <label for="${uniqueId}" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-block;">
+                        📁 Seleccionar Imagen
+                    </label>
+                    <input type="file" id="${uniqueId}" class="evidence-file" accept="image/*" onchange="updateFilename(this)" style="display: none;">
+                    <span class="evidence-filename" style="color: #90caf9;">Ningún archivo seleccionado</span>
                 </div>
-            `;
-            container.insertAdjacentHTML('beforeend', evidenceHTML);
-        }
+            </div>
+            <div class="form-group">
+                <label>Descripción de la evidencia</label>
+                <textarea class="evidence-description" placeholder="Describe qué muestra esta evidencia"></textarea>
+            </div>
+            <button type="button" class="btn btn-small btn-danger" onclick="removeEvidence(this)" style="margin-top: 10px;">🗑️ Eliminar Evidencia</button>
+        </div>
+    `;
+    container.insertAdjacentHTML('beforeend', evidenceHTML);
+}
 
         // Inicializar eventos de archivos
         document.addEventListener('DOMContentLoaded', function() {
