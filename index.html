@@ -2194,7 +2194,7 @@ async function saveReport() {
                 ` : ''}
                 <div style="display: flex; gap: 10px; margin-top: 15px;">
                     <button class="btn btn-small" style="background: #2196f3;" onclick="viewReport(${index})">🔍 Ver Completo</button>
-                    <button class="btn btn-small btn-edit" onclick="editReport(${index})">✏️ Editar</button>
+                    <button class="btn btn-small btn-edit admin-only" onclick="editReport(${index})">✏️ Editar</button>
                     <button class="btn btn-small btn-danger admin-only" onclick="deleteReport(${index})">🗑️ Eliminar</button>
                 </div>
             </div>
