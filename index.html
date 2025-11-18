@@ -3548,245 +3548,201 @@ function addEvidence() {
     }
 
     function showReportModal(report) {
-        let modalHTML = `
-            <div class="edit-modal active" id="viewReportModal" style="z-index: 4000;">
-                <div class="edit-modal-content" style="max-width: 900px;">
-                    <h2 style="color: #2196f3; text-align: center; margin-bottom: 30px;">🔍 INFORME COMPLETO</h2>
+    let modalHTML = `
+        <div class="edit-modal active" id="viewReportModal" style="z-index: 4000;">
+            <div class="edit-modal-content" style="max-width: 900px;">
+                <h2 style="color: #2196f3; text-align: center; margin-bottom: 30px;">🔍 INFORME COMPLETO</h2>
+                
+                <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #64b5f6; margin-bottom: 15px;">📋 Información General</h3>
                     
-                    <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                        <h3 style="color: #64b5f6; margin-bottom: 15px;">📋 Información General</h3>
-                        
-                        <div style="margin-bottom: 12px;">
-                            <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Número de Caso:</label>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                ${report.number}
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 12px;">
-                            <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Estado:</label>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">
-                                <span class="status ${report.status}">${getStatusText(report.status)}</span>
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 12px;">
-                            <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Título:</label>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                ${report.title}
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 12px;">
-                            <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Detective:</label>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                ${report.detective}
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 12px;">
-                            <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Fecha:</label>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                ${report.date}
-                            </div>
-                        </div>
-                        
-                        <div style="margin-bottom: 12px;">
-                            <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Resumen:</label>
-                            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
-                                ${report.summary}
-                            </div>
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Número de Caso:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.number}
                         </div>
                     </div>
                     
-                    ${report.suspect ? `
-                        <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <h3 style="color: #64b5f6; margin-bottom: 15px;">🧾 Información del Sospechoso</h3>
-                            
-                            ${report.suspect.name ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Nombre:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.name}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.dni ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">DNI:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.dni}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.gender ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Género:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.gender}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.state ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Estado:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.state}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.build ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Contextura:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.build}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.birthdate ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Fecha de Nacimiento:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.birthdate}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.nationality ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Nacionalidad:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.nationality}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.maritalStatus ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Estado Civil:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.maritalStatus}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.phone ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Teléfono:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
-                                        ${report.suspect.phone}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.residences ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Residencias:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
-                                        ${report.suspect.residences}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.businesses ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Negocios:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
-                                        ${report.suspect.businesses}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            
-                            ${report.suspect.description ? `
-                                <div style="margin-bottom: 12px;">
-                                    <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Descripción Física:</label>
-                                    <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
-                                        ${report.suspect.description}
-                                    </div>
-                                </div>
-                            ` : ''}
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Estado:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px;">
+                            <span class="status ${report.status}">${getStatusText(report.status)}</span>
                         </div>
-                    ` : ''}
+                    </div>
                     
-                    ${report.vehicles && report.vehicles.length > 0 ? `
-                        <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                            <h3 style="color: #64b5f6; margin-bottom: 15px;">🚗 Vehículos Asociados</h3>
-                            ${report.vehicles.map((v, idx) => `
-                                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: ${idx < report.vehicles.length - 1 ? '15px' : '0'};">
-                                    <p style="color: #2196f3; font-weight: bold; margin-bottom: 10px;">Vehículo #${idx + 1}</p>
-                                    ${v.name ? `
-                                        <div style="margin-bottom: 8px;">
-                                            <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Vehículo:</label>
-                                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
-                                                ${v.name}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${v.model ? `
-                                        <div style="margin-bottom: 8px;">
-                                            <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Modelo:</label>
-                                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
-                                                ${v.model}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-                                    ${v.plate ? `
-                                        <div style="margin-bottom: 8px;">
-                                            <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Matrícula:</label>
-                                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
-                                                ${v.plate}
-                                            </div>
-                                        </div>
-                                    ` : ''}
-
-                                    ${report.evidences && report.evidences.length > 0 ? `
-                                        <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                                            <h3 style="color: #64b5f6; margin-bottom: 15px;">📸 Evidencias Fotográficas</h3>
-
-                                            ${report.evidences.map((e, idx) => `
-                                                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-
-                                                    <p style="color: #2196f3; font-weight: bold; margin-bottom: 10px;">
-                                                        Evidencia #${idx + 1}
-                                                    </p>
-                                            
-                                                    ${e.imageData ? `
-                                                        <div style="margin-bottom: 12px;">
-                                                            <img src="${e.imageData}" 
-                                                                 style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 2px solid #1976d2; display: block;">
-                                                        </div>
-                                                    ` : ''}
-                                                    
-                                                    ${e.filename ? `
-                                                        <div style="margin-bottom: 8px;">
-                                                            <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Archivo:</label>
-                                                            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
-                                                                ${e.filename}
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
-                                                    
-                                                    ${e.description ? `
-                                                        <div style="margin-bottom: 8px;">
-                                                            <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Descripción:</label>
-                                                            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd; line-height: 1.5;">
-                                                                ${e.description}
-                                                            </div>
-                                                        </div>
-                                                    ` : ''}
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    ` : ''}  
-                                    </div>           
-                            `).join('')}
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Título:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.title}
                         </div>
-                    ` : ''}
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Detective:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.detective}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Fecha:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.date}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Resumen:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
+                            ${report.summary}
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h3 style="color: #64b5f6; margin-bottom: 15px;">🧾 Información del Sospechoso</h3>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Nombre:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.name ? report.suspect.name : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">DNI:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.dni ? report.suspect.dni : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Género:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.gender ? report.suspect.gender : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Estado:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.state ? report.suspect.state : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Contextura:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.build ? report.suspect.build : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Fecha de Nacimiento:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.birthdate ? report.suspect.birthdate : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Nacionalidad:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.nationality ? report.suspect.nationality : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Estado Civil:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.maritalStatus ? report.suspect.maritalStatus : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Teléfono:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd;">
+                            ${report.suspect && report.suspect.phone ? report.suspect.phone : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Residencias:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
+                            ${report.suspect && report.suspect.residences ? report.suspect.residences : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Negocios:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
+                            ${report.suspect && report.suspect.businesses ? report.suspect.businesses : 'Sin especificar'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 12px;">
+                        <label style="color: #90caf9; font-size: 0.9em; display: block; margin-bottom: 5px;">Descripción Física:</label>
+                        <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 5px; color: #ddd; line-height: 1.5;">
+                            ${report.suspect && report.suspect.description ? report.suspect.description : 'Sin especificar'}
+                        </div>
+                    </div>
+                </div>
+                
+                ${report.vehicles && report.vehicles.length > 0 ? `
+                    <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3 style="color: #64b5f6; margin-bottom: 15px;">🚗 Vehículos Asociados</h3>
+                        ${report.vehicles.map((v, idx) => `
+                            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: ${idx < report.vehicles.length - 1 ? '15px' : '0'};">
+                                <p style="color: #2196f3; font-weight: bold; margin-bottom: 10px;">Vehículo #${idx + 1}</p>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Vehículo:</label>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
+                                        ${v.name ? v.name : 'Sin especificar'}
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Modelo:</label>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
+                                        ${v.model ? v.model : 'Sin especificar'}
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Matrícula:</label>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
+                                        ${v.plate ? v.plate : 'Sin especificar'}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                
+                ${report.evidences && report.evidences.length > 0 ? `
+                    <div style="background: rgba(33, 150, 243, 0.1); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                        <h3 style="color: #64b5f6; margin-bottom: 15px;">📸 Evidencias Fotográficas</h3>
+                        ${report.evidences.map((e, idx) => `
+                            <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                <p style="color: #2196f3; font-weight: bold; margin-bottom: 10px;">Evidencia #${idx + 1}</p>
+                                ${e.imageData ? `
+                                    <div style="margin-bottom: 12px;">
+                                        <img src="${e.imageData}" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 2px solid #1976d2; display: block;">
+                                    </div>
+                                ` : ''}
+                                <div style="margin-bottom: 8px;">
+                                    <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Archivo:</label>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; color: #ddd;">
+                                        ${e.filename ? e.filename : 'Sin especificar'}
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <label style="color: #90caf9; font-size: 0.85em; display: block; margin-bottom: 3px;">Descripción:</label>
+                                    <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; color: #ddd; line-height: 1.5;">
+                                        ${e.description ? e.description : 'Sin especificar'}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
                     
                     ${(() => {
                         // Buscar multas asociadas al sospechoso
